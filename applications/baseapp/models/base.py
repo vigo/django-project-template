@@ -18,6 +18,7 @@ class BaseModelQuerySet(models.QuerySet):
     Common QuerySet for BaseModel and BaseModelWithSoftDelete. 
     Both querysets have:
     
+    - `.actives()`: Returns `status` = `STATUS_ONLINE`
     - `.deleted()`: Returns `status` = `STATUS_DELETED`
     - `.offlines()`: Returns `status` = `STATUS_OFFLINE`
     - `.drafts()`: Returns `status` = `STATUS_DRAFT`
@@ -28,26 +29,22 @@ class BaseModelQuerySet(models.QuerySet):
     
     def actives(self):
         return self.filter(
-            status=BaseModelWithSoftDelete.STATUS_ONLINE,
-            deleted_at__isnull=True,
+            status=BaseModel.STATUS_ONLINE,
         )
 
     def deleted(self):
         return self.filter(
-            status=BaseModelWithSoftDelete.STATUS_DELETED,
-            deleted_at__isnull=False,
+            status=BaseModel.STATUS_DELETED,
         )
 
     def offlines(self):
         return self.filter(
-            status=BaseModelWithSoftDelete.STATUS_OFFLINE,
-            deleted_at__isnull=True,
+            status=BaseModel.STATUS_OFFLINE,
         )
 
     def drafts(self):
         return self.filter(
-            status=BaseModelWithSoftDelete.STATUS_DRAFT,
-            deleted_at__isnull=True,
+            status=BaseModel.STATUS_DRAFT,
         )
 
 
@@ -56,15 +53,12 @@ class BaseModelWithSoftDeleteQuerySet(BaseModelQuerySet):
     Available methods are:
     
     - `.all()`: Mimics deleted records. Return only if the `deleted_at` value is NULL!
-    - `.delete()`: Soft deletes give objects.
-    - `.undelete()`: Recovers (sets `status` to `STATUS_ONLINE`) give objects.
     - `.deleted()`: Returns soft deleted objects.
-    
-    Also inherits from `BaseModelQuerySet`:
-    
-    - `.deleted()`: Returns `status` = `STATUS_DELETED`
+    - `.actives()`: Returns `status` = `STATUS_ONLINE`
     - `.offlines()`: Returns `status` = `STATUS_OFFLINE`
     - `.drafts()`: Returns `status` = `STATUS_DRAFT`
+    - `.delete()`: Soft deletes give objects.
+    - `.undelete()`: Recovers (sets `status` to `STATUS_ONLINE`) give objects.
 
     """
     
@@ -81,6 +75,15 @@ class BaseModelWithSoftDeleteQuerySet(BaseModelQuerySet):
 
     def all(self):
         return self.filter(deleted_at__isnull=True)
+
+    def actives(self):
+        return self.all().filter(status=BaseModel.STATUS_ONLINE)
+
+    def offlines(self):
+        return self.all().filter(status=BaseModel.STATUS_OFFLINE)
+
+    def drafts(self):
+        return self.all().filter(status=BaseModel.STATUS_DRAFT)
 
     def delete(self):
         return self._delete_or_undelete()
