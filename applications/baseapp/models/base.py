@@ -19,26 +19,32 @@ class BaseModelQuerySet(models.QuerySet):
     Both querysets have:
     
     - `.deleted()`: Returns `status` = `STATUS_DELETED`
-    - `.offlined()`: Returns `status` = `STATUS_OFFLINE`
-    - `.drafted()`: Returns `status` = `STATUS_DRAFT`
+    - `.offlines()`: Returns `status` = `STATUS_OFFLINE`
+    - `.drafts()`: Returns `status` = `STATUS_DRAFT`
     
     methods.
     
     """
     
+    def actives(self):
+        return self.filter(
+            status=BaseModelWithSoftDelete.STATUS_ONLINE,
+            deleted_at__isnull=True,
+        )
+
     def deleted(self):
         return self.filter(
             status=BaseModelWithSoftDelete.STATUS_DELETED,
             deleted_at__isnull=False,
         )
 
-    def offlined(self):
+    def offlines(self):
         return self.filter(
             status=BaseModelWithSoftDelete.STATUS_OFFLINE,
             deleted_at__isnull=True,
         )
 
-    def drafted(self):
+    def drafts(self):
         return self.filter(
             status=BaseModelWithSoftDelete.STATUS_DRAFT,
             deleted_at__isnull=True,
@@ -57,8 +63,8 @@ class BaseModelWithSoftDeleteQuerySet(BaseModelQuerySet):
     Also inherits from `BaseModelQuerySet`:
     
     - `.deleted()`: Returns `status` = `STATUS_DELETED`
-    - `.offlined()`: Returns `status` = `STATUS_OFFLINE`
-    - `.drafted()`: Returns `status` = `STATUS_DRAFT`
+    - `.offlines()`: Returns `status` = `STATUS_OFFLINE`
+    - `.drafts()`: Returns `status` = `STATUS_DRAFT`
 
     """
     
@@ -98,11 +104,14 @@ class BaseModelWithSoftDeleteManager(models.Manager):
     def deleted(self):
         return self.get_queryset().deleted()
 
-    def offlined(self):
-        return self.get_queryset().offlined()
+    def actives(self):
+        return self.get_queryset().actives()
 
-    def drafted(self):
-        return self.get_queryset().drafted()
+    def offlines(self):
+        return self.get_queryset().offlines()
+
+    def drafts(self):
+        return self.get_queryset().drafts()
 
     def delete(self):
         return self.get_queryset().delete()

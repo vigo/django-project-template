@@ -149,8 +149,32 @@ $ python manage.py runserver
 ```
 
 You’ll see `Hello from Blog` page and If you check `blog/views.py` you’ll see
-and example usage of `HtmlDebugMixin` and `console` util. Application
-structure is:
+and example usage of `HtmlDebugMixin` and `console` util. 
+
+```python
+from django.views.generic.base import TemplateView
+
+from baseapp.mixins import HtmlDebugMixin
+from baseapp.utils import console
+
+
+console.configure(
+    source='blog/views.py',
+)
+
+
+class BlogView(HtmlDebugMixin, TemplateView):
+    template_name = 'blog/index.html'
+
+    def get_context_data(self, **kwargs):
+        self.hdbg('Hello from hdbg')
+        kwargs = super().get_context_data(**kwargs)
+        console.dir(self.request.user)
+        return kwargs
+
+```
+
+Let’s look at our `blog` application structure:
 
     applications/blog/
     ├── admin
@@ -350,7 +374,7 @@ Starting development server at http://127.0.0.1:8000/
 Quit the server with CONTROL-C.
 ```
 
-Open `http://127.0.0.1:8000/admin/` and user your superuser credentials.
+Open `http://127.0.0.1:8000/admin/` and use your superuser credentials.
 
 ---
 
@@ -431,7 +455,7 @@ Here is directory/file structure:
 
 By default, `manage.py` looks for `DJANGO_ENV` environment variable. Builds 
 `DJANGO_SETTINGS_MODULE` environment variable according to `DJANGO_ENV` variable.
-If you `DJANGO_ENV` environment variable is set to `production`, this means that
+If your `DJANGO_ENV` environment variable is set to `production`, this means that
 you are running `config/settings/production.py`.
 
 Also `config/wsgi.py` looks for `DJANGO_ENV` environment variable too. For
@@ -595,8 +619,9 @@ $ heroku run python manage.py createsuperuser
 If you are using different platform or OS, such as Ubuntu or your custom
 servers, you can follow the settings and requirements conventions. If you name
 it `production`, create your `config/settings/production.py` and
-`requirements/production.pip` and don’t forget to set `DJANGO_ENV` and 
-`DJANGO_SECRET` on your production server!
+`requirements/production.pip`. You must set you `DJANGO_ENV` to `production`
+and don’t forget to set `DJANGO_ENV` and `DJANGO_SECRET` on your production
+server!
 
 ---
 
@@ -644,8 +669,9 @@ Custom manager has custom querysets against these statuses such as:
 
 ```python
 >>> Post.objects_bm.deleted()  # filters: status = STATUS_DELETED
->>> Post.objects_bm.offlined() # filters: status = STATUS_OFFLINE
->>> Post.objects_bm.drafted()  # filters: status = STATUS_DRAFT
+>>> Post.objects_bm.actives()  # filters: status = STATUS_ONLINE
+>>> Post.objects_bm.offlines() # filters: status = STATUS_OFFLINE
+>>> Post.objects_bm.drafts()   # filters: status = STATUS_DRAFT
 ```
 
 ## `BaseModelWithSoftDelete`
@@ -1148,6 +1174,17 @@ Your database must be rollable :) To see available migrations:
 `rake db:roll_back[NAME_OF_YOUR_APPLICATION]`. Look at the list and choose your
 target migration (*example*): `rake db:roll_back[baseapp,0001_create_custom_user]`.
 
+```bash
+# example scenario
+$ rake db:roll_back[baseapp]
+Please select your migration:
+baseapp
+ [X] 0001_create_custom_user
+ [X] 0002_post_model
+
+$ rake db:roll_back[baseapp,0001_create_custom_user]
+```
+
 ### `rake db:shell`
 
 Runs default database client.
@@ -1253,6 +1290,45 @@ Runs tests of baseapp!
 $ DJANGO_ENV=test python manage.py test baseapp -v 2 # or
 $ DJANGO_ENV=test python manage.py test baseapp.tests.CustomUserTestCase # single, or
 $ rake test:baseapp
+```
+
+---
+
+## Notes
+
+If you created models via management command or rake task, you’ll have admin
+file automatically and generated against your model type. If you created a model
+with `BaseModelWithSoftDelete`, you’ll have `BaseAdminWithSoftDelete` set.
+
+`BaseAdminWithSoftDelete` uses `objects_bm` in `get_queryset` and by default,
+you’ll have extra actions and soft delete feature. If you don’t want to use
+`objects_bm` manager, you need to override it manually:
+
+```python
+# example: blog/admin/post.py
+
+from django.contrib import admin
+
+from baseapp.admin import BaseAdminWithSoftDelete
+
+from ..models import Post
+
+
+__all__ = [
+    'Post',
+]
+
+
+class PostAdmin(BaseAdminWithSoftDelete):
+    # sticky_list_filter = None
+    # hide_deleted_at = False
+    
+    def get_queryset(self, request):
+        return self.model.objects.get_queryset()  # this line!
+
+
+admin.site.register(Post, PostAdmin)
+
 ```
 
 ---
