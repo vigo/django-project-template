@@ -46,6 +46,12 @@ $ pip install -r requirements/development.pip
 $ git init # now you can start your own repo!
 ```
 
+or, you can use installer script:
+
+```bash
+bash < $(curl -fsSL https://raw.githubusercontent.com/vigo/django-project-template/master/install.sh)
+```
+
 This template comes with custom User model. Please take a look at it. If you
 need to add/change fields, please do so. If you change anything, please run `makemigrations`
 to keep track of your db. Then continue to work:
