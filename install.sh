@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Created by Uğur Özyılmazel on 2017-09-28.
-# bash < $(curl -fsSL https://raw.githubusercontent.com/vigo/django-project-template/master/install.sh)
+# bash <(curl -fsSL https://raw.githubusercontent.com/vigo/django-project-template/master/install.sh)
 
 set -e
 set -o pipefail
