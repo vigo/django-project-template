@@ -1,4 +1,5 @@
-![Django](https://img.shields.io/badge/django-1.11.4-yellow.svg)
+![Django](https://img.shields.io/badge/django-1.11.4-green.svg)
+![Version](https://img.shields.io/badge/version-0.1.2-yellow.svg)
 
 # Django Project Starter Template
 
@@ -636,6 +637,8 @@ server!
 This is custom model which uses `AbstractBaseUser` and `PermissionsMixin`.
 Fields are:
 
+- `created_at`
+- `updated_at`
 - `email`
 - `first_name`
 - `middle_name` (optional)
@@ -1389,6 +1392,13 @@ All PR’s are welcome!
 
 This project is licensed under MIT
 
+---
+
+## Change Log
+
+**2017-10-02**
+
+- Added: `created_at` and `updated_at` fields to custom User model.
 
 [01]: https://github.com/django-extensions/django-extensions "Django Extensions"
 [02]: https://django-debug-toolbar.readthedocs.io/en/stable/ "Django Debug Toolbar"
