@@ -51,6 +51,9 @@ or, you can use installer script:
 
 ```bash
 $ bash <(curl -fsSL https://raw.githubusercontent.com/vigo/django-project-template/master/install.sh)
+$ cd YOUR_PROJECT/
+$ pip install -r requirements/development.pip
+$ git init # now you can start your own repo!
 ```
 
 This template comes with custom User model. Please take a look at it. If you
