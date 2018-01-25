@@ -1,5 +1,5 @@
 ![Django](https://img.shields.io/badge/django-1.11.4-green.svg)
-![Version](https://img.shields.io/badge/version-0.1.2-yellow.svg)
+![Version](https://img.shields.io/badge/version-0.1.3-yellow.svg)
 
 # Django Project Starter Template
 
@@ -1398,6 +1398,11 @@ This project is licensed under MIT
 ---
 
 ## Change Log
+
+**2018-01-25**
+
+- Fix: model generator now creates more meaningfull file names such as `CustomDataPage` => `custom_data_page.py` in `models/` and `admins/`
+- Fix: admin generator now imports (example:) `CustomDataPageAdmin` instead of `CustomDataPage`.
 
 **2017-10-02**
 
