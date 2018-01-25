@@ -777,7 +777,7 @@ from ..models import Post
 
 
 __all__ = [
-    'Post',
+    'PostAdmin',
 ]
 
 
@@ -1327,7 +1327,7 @@ from ..models import Post
 
 
 __all__ = [
-    'Post',
+    'PostAdmin',
 ]
 
 
